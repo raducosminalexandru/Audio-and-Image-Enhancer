@@ -1,4 +1,4 @@
 import { createApp } from 'vue'
-import App from './App.vue'
+import FileUpload from './components/FileUpload.vue'
 
-createApp(App).mount('#app')
+createApp(FileUpload).mount('#app')
