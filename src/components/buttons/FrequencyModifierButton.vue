@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showFrequencyOptions" class="frequency-modifier">
+  <div class="frequency-modifier">
     <button
         @click="toggleFrequencyOptions"
         class="action-btn frequency-btn"
@@ -26,7 +26,8 @@ export default {
   props: {
     mediaType: {
       type: String,
-      required: true
+      required: false,
+      default: 'audio'
     },
     audioSrc: {
       type: String,
@@ -156,7 +157,6 @@ export default {
 <style scoped>
 .frequency-modifier {
   position: relative;
-  margin-top: 15px;
   width: 100%;
   display: flex;
   flex-direction: column;

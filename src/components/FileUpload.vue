@@ -57,7 +57,6 @@
               ref="imageElement"
           />
 
-          <!-- Image Effect Buttons -->
           <div v-if="mediaType === 'image'" class="buttons-row">
             <button class="action-btn submit-btn" @click="restoreOriginal">
               <span class="btn-icon">🔁</span> Original
@@ -70,7 +69,6 @@
             </button>
           </div>
 
-          <!-- Audio preview -->
           <audio
               v-if="mediaType === 'audio'"
               controls
@@ -82,19 +80,17 @@
             Your browser does not support the audio element.
           </audio>
 
-          <!-- Audio Tool Buttons -->
-          <div v-if="mediaType === 'audio'" class="buttons-row">
+          <div v-if="mediaType === 'audio'" class="audio-tools">
             <FrequencyModifierButton
                 :audioSrc="mediaPreview"
                 @frequency-modified="handleFrequencyModified"
             />
-            <NoiseReductionButton
+            <ReverseAudioButton
                 :audioSrc="mediaPreview"
-                @noise-reduced="handleNoiseReduced"
+                @audio-reversed="handleAudioReversed"
             />
           </div>
 
-          <!-- Upload + Download Buttons -->
           <div class="upload-download-row">
             <UploadMediaButton :selectedFile="selectedFile" />
 
@@ -116,7 +112,7 @@
 import UploadMediaButton from './buttons/UploadMediaButton.vue';
 import ThemeToggle from './buttons/ThemeToggleButton.vue';
 import FrequencyModifierButton from './buttons/FrequencyModifierButton.vue';
-import NoiseReductionButton from './buttons/NoiseReductionButton.vue';
+import ReverseAudioButton from './buttons/ReverseAudioButton.vue';
 
 export default {
   name: 'MediaUpload',
@@ -124,7 +120,7 @@ export default {
     UploadMediaButton,
     ThemeToggle,
     FrequencyModifierButton,
-    NoiseReductionButton
+    ReverseAudioButton
   },
   data() {
     return {
@@ -132,8 +128,7 @@ export default {
       mediaPreview: null,
       mediaType: null,
       theme: 'dark',
-      originalImageData: null,
-      originalAudioData: null
+      originalImageData: null
     };
   },
   methods: {
@@ -163,8 +158,6 @@ export default {
         this.mediaPreview = e.target.result;
         if (this.mediaType === 'image') {
           this.originalImageData = e.target.result;
-        } else if (this.mediaType === 'audio') {
-          this.originalAudioData = e.target.result;
         }
       };
       reader.readAsDataURL(file);
@@ -174,7 +167,6 @@ export default {
       this.mediaPreview = null;
       this.mediaType = null;
       this.originalImageData = null;
-      this.originalAudioData = null;
       this.$refs.fileInput.value = '';
     },
     uploadFile() {
@@ -217,14 +209,7 @@ export default {
       });
     },
     restoreOriginal() {
-      if (this.mediaType === 'image') {
-        this.mediaPreview = this.originalImageData;
-      } else if (this.mediaType === 'audio') {
-        this.mediaPreview = this.originalAudioData;
-        if (this.$refs.audioElement) {
-          this.$refs.audioElement.load();
-        }
-      }
+      this.mediaPreview = this.originalImageData;
     },
     processImage(callback) {
       const img = new Image();
@@ -250,7 +235,7 @@ export default {
         this.$refs.audioElement.load();
       }
     },
-    handleNoiseReduced(newAudioUrl) {
+    handleAudioReversed(newAudioUrl) {
       this.mediaPreview = newAudioUrl;
       if (this.$refs.audioElement) {
         this.$refs.audioElement.load();
@@ -259,7 +244,6 @@ export default {
   }
 };
 </script>
-
 
 <style>
 body {
