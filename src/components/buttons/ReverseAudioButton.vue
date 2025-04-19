@@ -1,9 +1,6 @@
 <template>
   <div class="frequency-modifier">
-    <button
-        class="frequency-btn"
-        @click="reverseAudio"
-    >
+    <button class="frequency-btn" @click="reverseAudio">
       <span class="btn-icon">🔃</span> Reverse Audio
     </button>
   </div>
@@ -48,13 +45,12 @@ export default {
             }
           }
 
-          // Create a new audio source and connect it to the destination
+          // Create a media stream destination to capture the audio
+          const destination = audioContext.createMediaStreamDestination();
+
+          // Create a temporary source to connect to the destination (but we won't play it)
           const source = audioContext.createBufferSource();
           source.buffer = reversedBuffer;
-          source.connect(audioContext.destination);
-
-          // Create a media stream destination
-          const destination = audioContext.createMediaStreamDestination();
           source.connect(destination);
 
           // Create a media recorder to capture the reversed audio
@@ -68,17 +64,26 @@ export default {
           mediaRecorder.onstop = () => {
             const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
             const audioUrl = URL.createObjectURL(audioBlob);
+
+            // Emit the reversed audio URL to update the preview without playing
             this.$emit('audio-reversed', audioUrl);
           };
 
-          // Start recording and playing
+          // Start recording but don't play the audio
           mediaRecorder.start();
+
+          // Connect to audio processing graph but don't connect to audioContext.destination
+          // This prevents the audio from playing automatically
+
+          // We need to "process" the audio to generate the media stream
+          // Start the source but not connect it to speakers
           source.start();
 
           // Stop after the duration of the audio
           setTimeout(() => {
             source.stop();
             mediaRecorder.stop();
+            source.disconnect();
           }, buffer.duration * 1000);
         });
       };
@@ -92,7 +97,7 @@ export default {
 <style scoped>
 .frequency-modifier {
   position: relative;
-  width: 100%;
+  width: auto;
   display: flex;
   flex-direction: column;
   align-items: center;

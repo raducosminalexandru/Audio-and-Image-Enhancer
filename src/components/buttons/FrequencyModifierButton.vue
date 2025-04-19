@@ -157,7 +157,7 @@ export default {
 <style scoped>
 .frequency-modifier {
   position: relative;
-  width: 100%;
+  width: auto;
   display: flex;
   flex-direction: column;
   align-items: center;

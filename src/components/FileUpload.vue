@@ -28,16 +28,14 @@
               class="hidden-input"
           />
           <div class="buttons-row">
-            <button @click="$refs.fileInput.click()" class="action-btn upload-btn">
-              <span class="btn-icon">📁</span> Select Media
-            </button>
-            <button
-                @click="removeMedia"
-                class="action-btn remove-btn"
-                :class="{ 'disabled-btn': !selectedFile }"
-            >
-              <span class="btn-icon">🗑️</span> Remove Media
-            </button>
+            <SelectMediaButton
+                :selectedFile="selectedFile"
+                @select-media="$refs.fileInput.click()"
+            />
+            <RemoveMediaButton
+                :disabled="!selectedFile"
+                @remove-media="removeMedia"
+            />
           </div>
           <span v-if="selectedFile" class="file-name" :class="{ 'light-text': theme === 'light' }">
             {{ selectedFile.name }}
@@ -47,7 +45,6 @@
         <div v-if="mediaPreview" class="preview-container">
           <h3 :class="{ 'light-text': theme === 'light' }">Preview</h3>
 
-          <!-- Image preview -->
           <img
               v-if="mediaType === 'image'"
               :src="mediaPreview"
@@ -80,7 +77,7 @@
             Your browser does not support the audio element.
           </audio>
 
-          <div v-if="mediaType === 'audio'" class="audio-tools">
+          <div v-if="mediaType === 'audio'" class="buttons-row audio-tools">
             <FrequencyModifierButton
                 :audioSrc="mediaPreview"
                 @frequency-modified="handleFrequencyModified"
@@ -113,6 +110,9 @@ import UploadMediaButton from './buttons/UploadMediaButton.vue';
 import ThemeToggle from './buttons/ThemeToggleButton.vue';
 import FrequencyModifierButton from './buttons/FrequencyModifierButton.vue';
 import ReverseAudioButton from './buttons/ReverseAudioButton.vue';
+import SelectMediaButton from './buttons/SelectMediaButton.vue';
+import RemoveMediaButton from './buttons/RemoveMediaButton.vue';
+
 
 export default {
   name: 'MediaUpload',
@@ -120,7 +120,9 @@ export default {
     UploadMediaButton,
     ThemeToggle,
     FrequencyModifierButton,
-    ReverseAudioButton
+    ReverseAudioButton,
+    SelectMediaButton,
+    RemoveMediaButton
   },
   data() {
     return {
@@ -390,6 +392,15 @@ h3 {
   margin-bottom: 15px;
 }
 
+.audio-tools {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 15px;
+  width: 100%;
+}
+
 .upload-download-row {
   display: flex;
   flex-wrap: wrap;
@@ -432,21 +443,6 @@ h3 {
 .btn-icon {
   margin-right: 8px;
   font-size: 1.1rem;
-}
-
-.upload-btn {
-  background: linear-gradient(45deg, #ffeb3b, #fbc02d);
-  color: #333;
-}
-
-.remove-btn {
-  background: linear-gradient(45deg, #F44336, #C62828);
-}
-
-.disabled-btn {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
 }
 
 .file-name {
