@@ -86,11 +86,13 @@
                 :audioSrc="mediaPreview"
                 @audio-reversed="handleAudioReversed"
             />
+            <EqualizerButton
+                :audioSrc="mediaPreview"
+                @equalizer-applied="handleEqualizerApplied"
+            />
           </div>
 
           <div class="upload-download-row">
-            <UploadMediaButton :selectedFile="selectedFile" />
-
             <button
                 v-if="selectedFile"
                 @click="downloadMedia"
@@ -106,23 +108,22 @@
 </template>
 
 <script>
-import UploadMediaButton from './buttons/UploadMediaButton.vue';
 import ThemeToggle from './buttons/ThemeToggleButton.vue';
 import FrequencyModifierButton from './buttons/FrequencyModifierButton.vue';
 import ReverseAudioButton from './buttons/ReverseAudioButton.vue';
 import SelectMediaButton from './buttons/SelectMediaButton.vue';
 import RemoveMediaButton from './buttons/RemoveMediaButton.vue';
-
+import EqualizerButton from './buttons/EqualizerButton.vue';
 
 export default {
   name: 'MediaUpload',
   components: {
-    UploadMediaButton,
     ThemeToggle,
     FrequencyModifierButton,
     ReverseAudioButton,
     SelectMediaButton,
-    RemoveMediaButton
+    RemoveMediaButton,
+    EqualizerButton
   },
   data() {
     return {
@@ -133,9 +134,17 @@ export default {
       originalImageData: null
     };
   },
+  mounted() {
+    // Set initial theme on body and html
+    document.body.className = this.theme + '-theme';
+    document.documentElement.className = this.theme + '-theme';
+  },
   methods: {
     toggleTheme() {
       this.theme = this.theme === 'dark' ? 'light' : 'dark';
+      // Apply theme to document elements
+      document.body.className = this.theme + '-theme';
+      document.documentElement.className = this.theme + '-theme';
     },
     handleFileUpload(event) {
       const file = event.target.files[0];
@@ -242,12 +251,35 @@ export default {
       if (this.$refs.audioElement) {
         this.$refs.audioElement.load();
       }
+    },
+    handleEqualizerApplied(newAudioUrl) {
+      this.mediaPreview = newAudioUrl;
+      if (this.$refs.audioElement) {
+        this.$refs.audioElement.load();
+      }
     }
   }
 };
 </script>
 
 <style>
+html, body {
+  min-height: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body.dark-theme,
+html.dark-theme {
+  background-color: #000;
+}
+
+body.light-theme,
+html.light-theme {
+  background-color: #f5f5f7;
+}
+
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -296,6 +328,9 @@ body {
   min-height: 100vh;
   padding-top: 80px;
   transition: background-color 0.3s ease;
+  background-color: inherit;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .app-header {
@@ -397,6 +432,7 @@ h3 {
   flex-direction: row;
   justify-content: center;
   gap: 15px;
+  flex-wrap: nowrap;
   margin-top: 15px;
   width: 100%;
 }
