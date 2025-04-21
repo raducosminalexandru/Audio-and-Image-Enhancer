@@ -55,15 +55,13 @@
           />
 
           <div v-if="mediaType === 'image'" class="buttons-row">
-            <button class="action-btn submit-btn" @click="restoreOriginal">
-              <span class="btn-icon">🔁</span> Original
-            </button>
-            <button class="action-btn submit-btn" @click="applyGrayscale">
-              <span class="btn-icon">🎞️</span> Grayscale
-            </button>
-            <button class="action-btn submit-btn" @click="applyLowExposure">
-              <span class="btn-icon">🌑</span> Low Exposure
-            </button>
+            <RestoreOriginalButton @restore-original="restoreOriginal" />
+            <GrayscaleButton @apply-grayscale="applyGrayscale" />
+            <LowExposureButton @apply-low-exposure="applyLowExposure" />
+            <BrightnessContrastAdjust
+                :mediaSrc="mediaPreview"
+                @adjusted="handleBrightnessContrastAdjusted"
+            />
           </div>
 
           <audio
@@ -78,7 +76,7 @@
           </audio>
 
           <div v-if="mediaType === 'audio'" class="buttons-row audio-tools">
-            <FrequencyModifierButton
+            <SpeedModifierButton
                 :audioSrc="mediaPreview"
                 @frequency-modified="handleFrequencyModified"
             />
@@ -89,6 +87,10 @@
             <EqualizerButton
                 :audioSrc="mediaPreview"
                 @equalizer-applied="handleEqualizerApplied"
+            />
+            <SpectrogramButton
+                :audioSrc="mediaPreview"
+                @spectrogram-generated="handleSpectrogramGenerated"
             />
           </div>
 
@@ -104,26 +106,47 @@
         </div>
       </div>
     </div>
+
+    <SpectrogramDisplay
+        :spectrogramData="spectrogramData"
+        :isVisible="showSpectrogram"
+        :theme="theme"
+        @close="closeSpectrogram"
+    />
   </div>
 </template>
 
 <script>
 import ThemeToggle from './buttons/ThemeToggleButton.vue';
-import FrequencyModifierButton from './buttons/FrequencyModifierButton.vue';
+import SpeedModifierButton from './buttons/SpeedModifierButton.vue';
 import ReverseAudioButton from './buttons/ReverseAudioButton.vue';
 import SelectMediaButton from './buttons/SelectMediaButton.vue';
 import RemoveMediaButton from './buttons/RemoveMediaButton.vue';
 import EqualizerButton from './buttons/EqualizerButton.vue';
+import BrightnessContrastAdjust from './buttons/BrightnessContrastAdjust.vue';
+import SpectrogramButton from './buttons/SpectrogramButton.vue';
+import SpectrogramDisplay from './SpectrogramDisplay.vue';
+
+// New modularized buttons
+import RestoreOriginalButton from './buttons/RestoreOriginalButton.vue';
+import GrayscaleButton from './buttons/GrayscaleButton.vue';
+import LowExposureButton from './buttons/LowExposureButton.vue';
 
 export default {
   name: 'MediaUpload',
   components: {
     ThemeToggle,
-    FrequencyModifierButton,
+    SpeedModifierButton,
     ReverseAudioButton,
     SelectMediaButton,
     RemoveMediaButton,
-    EqualizerButton
+    EqualizerButton,
+    BrightnessContrastAdjust,
+    SpectrogramButton,
+    SpectrogramDisplay,
+    RestoreOriginalButton,
+    GrayscaleButton,
+    LowExposureButton
   },
   data() {
     return {
@@ -131,18 +154,18 @@ export default {
       mediaPreview: null,
       mediaType: null,
       theme: 'dark',
-      originalImageData: null
+      originalImageData: null,
+      spectrogramData: null,
+      showSpectrogram: false
     };
   },
   mounted() {
-    // Set initial theme on body and html
     document.body.className = this.theme + '-theme';
     document.documentElement.className = this.theme + '-theme';
   },
   methods: {
     toggleTheme() {
       this.theme = this.theme === 'dark' ? 'light' : 'dark';
-      // Apply theme to document elements
       document.body.className = this.theme + '-theme';
       document.documentElement.className = this.theme + '-theme';
     },
@@ -179,10 +202,8 @@ export default {
       this.mediaType = null;
       this.originalImageData = null;
       this.$refs.fileInput.value = '';
-    },
-    uploadFile() {
-      if (!this.selectedFile) return;
-      alert(`File "${this.selectedFile.name}" ready for upload!`);
+      this.spectrogramData = null;
+      this.showSpectrogram = false;
     },
     downloadMedia() {
       if (!this.mediaPreview || !this.selectedFile) return;
@@ -240,6 +261,9 @@ export default {
         this.mediaPreview = canvas.toDataURL();
       };
     },
+    handleBrightnessContrastAdjusted(newDataUrl) {
+      this.mediaPreview = newDataUrl;
+    },
     handleFrequencyModified(newAudioUrl) {
       this.mediaPreview = newAudioUrl;
       if (this.$refs.audioElement) {
@@ -257,6 +281,13 @@ export default {
       if (this.$refs.audioElement) {
         this.$refs.audioElement.load();
       }
+    },
+    handleSpectrogramGenerated(data) {
+      this.spectrogramData = data;
+      this.showSpectrogram = true;
+    },
+    closeSpectrogram() {
+      this.showSpectrogram = false;
     }
   }
 };
@@ -522,15 +553,6 @@ h3 {
 
 .light-audio {
   background-color: #f0f0f0;
-}
-
-.submit-btn {
-  background: linear-gradient(45deg, #ec407a, #ad1457);
-}
-
-.submit-btn:hover {
-  background: linear-gradient(45deg, #d81b60, #880e4f);
-  transform: translateY(-2px);
 }
 
 .download-btn {

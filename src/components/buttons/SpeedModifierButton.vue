@@ -165,14 +165,22 @@ export default {
 
 .frequency-btn {
   background: linear-gradient(45deg, #3f51b5, #1a237e);
-  margin-bottom: 10px;
-  padding: 10px 20px;
+  padding: 0px 10px;
+  height: 24px;
   color: white;
   font-weight: bold;
+  font-size: 8px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 110px;
+  box-sizing: border-box;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .frequency-btn:hover {
