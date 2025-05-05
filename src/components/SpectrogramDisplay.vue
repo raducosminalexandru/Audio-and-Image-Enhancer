@@ -54,13 +54,6 @@ export default {
       },
       deep: true
     },
-    isVisible(newValue) {
-      if (newValue && this.spectrogramData) {
-        this.$nextTick(() => {
-          this.drawSpectrogram();
-        });
-      }
-    }
   },
   mounted() {
     if (this.isVisible && this.spectrogramData) {
@@ -75,14 +68,11 @@ export default {
       const ctx = canvas.getContext('2d');
       const { spectrogramData, width, height } = this.spectrogramData;
 
-      // Set canvas dimensions
       canvas.width = width;
       canvas.height = height;
 
-      // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw the spectrogram
       const colorGradient = this.generateColorGradient();
 
       for (let x = 0; x < spectrogramData.length; x++) {

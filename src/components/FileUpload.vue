@@ -126,8 +126,6 @@ import EqualizerButton from './buttons/EqualizerButton.vue';
 import BrightnessContrastAdjust from './buttons/BrightnessContrastAdjust.vue';
 import SpectrogramButton from './buttons/SpectrogramButton.vue';
 import SpectrogramDisplay from './SpectrogramDisplay.vue';
-
-// New modularized buttons
 import RestoreOriginalButton from './buttons/RestoreOriginalButton.vue';
 import GrayscaleButton from './buttons/GrayscaleButton.vue';
 import LowExposureButton from './buttons/LowExposureButton.vue';

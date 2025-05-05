@@ -90,6 +90,48 @@ export default {
 </script>
 
 <style scoped>
+.brightness-contrast-tool {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 150px;
+}
+
+.slider-label {
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  outline: none;
+  margin: 4px 0;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ec407a;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ec407a;
+  cursor: pointer;
+  border: none;
+}
+
 .custom-btn {
   background: linear-gradient(45deg, #ec407a, #ad1457);
   padding: 0px 10px;
@@ -108,6 +150,7 @@ export default {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-top: 4px;
 }
 
 .custom-btn:hover {
@@ -120,4 +163,3 @@ export default {
   to { opacity: 1; transform: translateY(0); }
 }
 </style>
-
